@@ -444,11 +444,6 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
     }
 
     public void displayIncomingCall(String uuid, String number, String callerName, boolean hasVideo, @Nullable Bundle payload) {
-        Log.w(TAG, "[RNCallKeepModule] displayIncomingCall check: isConnectionServiceAvailable="
-                + isConnectionServiceAvailable()
-                + ", hasPhoneAccount="
-                + hasPhoneAccount());
-
         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
             Log.w(TAG, "[RNCallKeepModule] displayIncomingCall ignored due to no ConnectionService or no phone account");
             return;
@@ -1197,23 +1192,13 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         ReactApplicationContext context = getContext();
 
         boolean hasPermissions = true;
-        List<String> missingPermissions = new ArrayList<>();
+
         for (String permission : permissions) {
             int permissionCheck = ContextCompat.checkSelfPermission(context, permission);
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                 hasPermissions = false;
-                missingPermissions.add(permission);
             }
         }
-
-        Log.w(TAG, "[RNCallKeepModule] hasPermissions=" + hasPermissions);
-        if (!hasPermissions) {
-            Log.w(TAG, "[RNCallKeepModule] Missing permissions: " + missingPermissions.toString());
-        }
-
-        Log.w(TAG, "[RNCallKeepModule] displayIncomingCall check: hasPermissions=" + hasPermissions);
-
-
         return hasPermissions;
     }
 
@@ -1228,27 +1213,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
 
         // Add more detailed logging
         PhoneAccount phoneAccount = telecomManager != null ? telecomManager.getPhoneAccount(handle) : null;
-
-        Log.w(TAG, "[RNCallKeepModule] Phone account details: " +
-                "handle=" + (handle != null ? handle.getId() : "null") + ", " +
-                "phoneAccount=" + (phoneAccount != null ? "exists" : "null") + ", " +
-                "isEnabled=" + (phoneAccount != null ? phoneAccount.isEnabled() : "N/A") + ", " +
-                "componentName=" + (handle != null ? handle.getComponentName() : "null"));
-
-        boolean connectionServiceAvailable = isConnectionServiceAvailable();
-        boolean telecomManagerValid = telecomManager != null;
-        boolean permissionsGranted = hasPermissions();
-        boolean phoneAccountExists = phoneAccount != null;
-        boolean phoneAccountEnabled = phoneAccount != null && phoneAccount.isEnabled();
-
-        Log.w(TAG, "[RNCallKeepModule] Debug displayIncomingCall check: " +
-                "isConnectionServiceAvailable=" + connectionServiceAvailable + ", " +
-                "telecomManager!=null=" + telecomManagerValid + ", " +
-                "hasPermissions=" + permissionsGranted + ", " +
-                "phoneAccountExists=" + phoneAccountExists + ", " +
-                "phoneAccountEnabled=" + phoneAccountEnabled);
-
-
+        
         return isConnectionServiceAvailable() && telecomManager != null &&
             hasPermissions() && telecomManager.getPhoneAccount(handle) != null &&
             telecomManager.getPhoneAccount(handle).isEnabled();
