@@ -17,29 +17,66 @@
 
 package io.wazo.callkeep;
 
-import com.facebook.react.ReactPackage;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.facebook.react.BaseReactPackage;
+
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
 
+
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class RNCallKeepPackage implements ReactPackage {
+public class RNCallKeepPackage extends BaseReactPackage {
+
+    // @Override
+    // public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+    //     return Collections.<NativeModule>singletonList(RNCallKeepModule.getInstance(reactContext, true));
+    // }
+
+    // // Deprecated RN 0.47
+    // public List<Class<? extends JavaScriptModule>> createJSModules() {
+    //     return Collections.emptyList();
+    // }
+
+    // @Override
+    // public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+    //     return Collections.emptyList();
+    // }
 
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        return Collections.<NativeModule>singletonList(RNCallKeepModule.getInstance(reactContext, true));
-    }
-
-    // Deprecated RN 0.47
-    public List<Class<? extends JavaScriptModule>> createJSModules() {
-        return Collections.emptyList();
+    public NativeModule getModule(String name, @NonNull ReactApplicationContext reactContext) {
+        if (name.equals(RNCallKeepModule.NAME)) {
+            return new RNCallKeepModule(reactContext);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+        return new ReactModuleInfoProvider() {
+            @Override
+            public Map<String, ReactModuleInfo> getReactModuleInfos() {
+                Map<String, ReactModuleInfo> map = new HashMap<>();
+                map.put(RNCallKeepModule.NAME, new ReactModuleInfo(
+                        RNCallKeepModule.NAME,       // name
+                        RNCallKeepModule.NAME,       // className
+                        false, // canOverrideExistingModule
+                        false, // needsEagerInit
+                        false, // isCXXModule
+                        true   // isTurboModule
+                ));
+                return map;
+            }
+        };
     }
 }

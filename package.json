@@ -18,10 +18,24 @@
   "homepage": "https://github.com/react-native-webrtc/react-native-callkeep#readme",
   "typings": "./index.d.ts",
   "peerDependencies": {
-    "react-native": ">=0.40.0"
+    "react-native": "*",
+    "react": "*"
   },
   "devDependencies": {
-    "react-native": ">=0.40.0"
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.3",
+    "react-native": "0.81.1",
+    "@react-native/babel-preset": "0.81.1",
+    "react": "19.1.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "files": ["index.js","specs/", "index.d.ts"],
+  "codegenConfig": {
+     "name": "RNCallKeepSpec",
+     "type": "modules",
+     "jsSrcsDir": "specs",
+     "android": {
+      "javaPackageName": "io.wazo.callkeep"
+    }
+  }
 }

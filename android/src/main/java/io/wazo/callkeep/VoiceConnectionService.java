@@ -76,10 +76,10 @@ import static io.wazo.callkeep.Constants.ACTION_ON_CREATE_CONNECTION_FAILED;
 // @see https://github.com/kbagchiGWC/voice-quickstart-android/blob/9a2aff7fbe0d0a5ae9457b48e9ad408740dfb968/exampleConnectionService/src/main/java/com/twilio/voice/examples/connectionservice/VoiceConnectionService.java
 @TargetApi(Build.VERSION_CODES.M)
 public class VoiceConnectionService extends ConnectionService {
-    private static Boolean isAvailable = false;
+    private static boolean isAvailable = false;
     private static Boolean isInitialized = false;
     private static Boolean isReachable = false;
-    private static Boolean canMakeMultipleCalls = true;
+    private static boolean canMakeMultipleCalls = true;
     private static String notReachableCallUuid;
     private static ConnectionRequest currentConnectionRequest;
     private static PhoneAccountHandle phoneAccountHandle;
@@ -111,7 +111,7 @@ public class VoiceConnectionService extends ConnectionService {
         VoiceConnectionService.phoneAccountHandle = phoneAccountHandle;
     }
 
-    public static void setAvailable(Boolean value) {
+    public static void setAvailable(boolean value) {
         Log.d(TAG, "[VoiceConnectionService] setAvailable: " + (value ? "true" : "false"));
         if (value) {
             setInitialized(true);
@@ -134,7 +134,7 @@ public class VoiceConnectionService extends ConnectionService {
        return settings.getMap("foregroundService");
     }
 
-    public static void setCanMakeMultipleCalls(Boolean value) {
+    public static void setCanMakeMultipleCalls(boolean value) {
         Log.d(TAG, "[VoiceConnectionService] setCanMakeMultipleCalls: " + (value ? "true" : "false"));
 
         VoiceConnectionService.canMakeMultipleCalls = value;

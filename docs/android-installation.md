@@ -66,7 +66,7 @@ public class MainActivity extends ReactActivity {
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 <uses-permission android:name="android.permission.CALL_PHONE" />
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
-// Use this to target android >= 14
+<!-- Use this to target android >= 14 -->
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
 
@@ -76,6 +76,7 @@ public class MainActivity extends ReactActivity {
         android:label="Wazo"
         android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
         // Use this to target android >= 11
+        android:exported="true"
         android:foregroundServiceType="camera|microphone"
         // For android < 11
         android:foregroundServiceType="phoneCall"

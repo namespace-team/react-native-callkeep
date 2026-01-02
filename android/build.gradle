@@ -1,26 +1,40 @@
+import com.android.Version
+
 buildscript {
-    repositories {
-        mavenCentral()
-        google()
+    ext.safeExtGet = {prop, fallback ->
+        rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
     }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+    // The Android Gradle plugin is only required when opening the android folder stand-alone.
+    // This avoids unnecessary downloads and potential conflicts when the library is included as a
+    // module dependency in an application project.
+    if (project == rootProject) {
+        repositories {
+            mavenCentral()
+            google()
+        }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:7.3.1'
+        }
     }
 }
 
 apply plugin: 'com.android.library'
-
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
+// Required for new architecture
+apply plugin: 'com.facebook.react'
 
 android {
-    compileSdkVersion safeExtGet('compileSdkVersion', 28)
+
+    def agpVersion = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+    if (agpVersion >= 7) {
+        namespace "io.wazo.callkeep"
+    }
+
+    compileSdkVersion safeExtGet('compileSdkVersion', 36)
 
     defaultConfig {
-        minSdkVersion safeExtGet('minSdkVersion', 23)
-        targetSdkVersion safeExtGet('targetSdkVersion', 28)
+        minSdkVersion safeExtGet('minSdkVersion', 24)
+        targetSdkVersion safeExtGet('targetSdkVersion', 36)
         versionCode 1
         versionName "1.0"
     }
@@ -28,9 +42,11 @@ android {
 
 repositories {
     mavenCentral()
+    google()
 }
 
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
+    //noinspection GradleDynamicVersion
+    implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation "androidx.localbroadcastmanager:localbroadcastmanager:1.1.0"
 }

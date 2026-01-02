@@ -36,6 +36,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Process;
 import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -104,14 +105,16 @@ import static io.wazo.callkeep.Constants.ACTION_ON_CREATE_CONNECTION_FAILED;
 import static io.wazo.callkeep.Constants.ACTION_DID_CHANGE_AUDIO_ROUTE;
 
 // @see https://github.com/kbagchiGWC/voice-quickstart-android/blob/9a2aff7fbe0d0a5ae9457b48e9ad408740dfb968/exampleConnectionService/src/main/java/com/twilio/voice/examples/connectionservice/VoiceConnectionServiceActivity.java
-public class RNCallKeepModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+public class RNCallKeepModule extends NativeCallKeepModuleSpec implements LifecycleEventListener {
     public static final int REQUEST_READ_PHONE_STATE = 1337;
     public static final int REQUEST_REGISTER_CALL_PROVIDER = 394859;
 
     public static RNCallKeepModule instance = null;
 
     private static final String E_ACTIVITY_DOES_NOT_EXIST = "E_ACTIVITY_DOES_NOT_EXIST";
-    private static final String REACT_NATIVE_MODULE_NAME = "RNCallKeep";
+
+    public static final String NAME = "RNCallKeep";
+
     private static String[] permissions = {
         Build.VERSION.SDK_INT < 30 ? Manifest.permission.READ_PHONE_STATE : Manifest.permission.READ_PHONE_NUMBERS,
         Manifest.permission.CALL_PHONE,
@@ -154,7 +157,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
         return _settings;
     }
 
-    private RNCallKeepModule(ReactApplicationContext reactContext) {
+    public RNCallKeepModule(ReactApplicationContext reactContext) {
         super(reactContext);
         // This line for listening to the Activity Lifecycle Events so we can end the calls onDestroy
         reactContext.addLifecycleEventListener(this);
@@ -172,9 +175,11 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
         }
     }
 
+
+    @NonNull
     @Override
     public String getName() {
-        return REACT_NATIVE_MODULE_NAME;
+        return NAME;
     }
 
     public void setContext(ReactApplicationContext reactContext) {
@@ -189,7 +194,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     public void reportNewIncomingCall(String uuid, String number, String callerName, boolean hasVideo, String payload) {
         Log.d(TAG, "[RNCallKeepModule] reportNewIncomingCall, uuid: " + uuid + ", number: " + number + ", callerName: " + callerName);
 
-        this.displayIncomingCall(uuid, number, callerName, hasVideo);
+        this.displayIncomingCall(uuid, number, callerName, hasVideo, null);
 
         // Send event to JS
         WritableMap args = Arguments.createMap();
@@ -354,6 +359,16 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
+    public void isCallActive(String uuid, Promise promise) {
+        promise.resolve(hasActiveCall);
+    }
+
+    @ReactMethod
+    public void getCalls(Promise promise) {
+        // iOS only method
+    }
+
+    @ReactMethod
     public void addListener(String eventName) {
       // Keep: Required for RN built in Event Emitter Calls.
     }
@@ -434,12 +449,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
         this.hasListeners = false;
     }
 
-    @ReactMethod
-    public void displayIncomingCall(String uuid, String number, String callerName) {
-        this.displayIncomingCall(uuid, number, callerName, false, null);
-    }
-
-    @ReactMethod
+    @Override
     public void displayIncomingCall(String uuid, String number, String callerName, boolean hasVideo) {
         this.displayIncomingCall(uuid, number, callerName, hasVideo, null);
     }
@@ -481,11 +491,6 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
         }
 
         conn.onAnswer();
-    }
-
-    @ReactMethod
-    public void startCall(String uuid, String number, String callerName) {
-        this.startCall(uuid, number, callerName, false, null);
     }
 
     @ReactMethod
@@ -712,7 +717,8 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void reportEndCallWithUUID(String uuid, int reason) {
+    public void reportEndCallWithUUID(String uuid, double reason) {
+
         Log.d(TAG, "[RNCallKeepModule] reportEndCallWithUUID, uuid: " + uuid + ", reason: " + reason);
         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
             return;
@@ -723,7 +729,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
             Log.w(TAG, "[RNCallKeepModule] reportEndCallWithUUID ignored because no connection found, uuid: " + uuid);
             return;
         }
-        conn.reportDisconnect(reason);
+        conn.reportDisconnect(((int) reason));
 
         this.stopListenToNativeCallsState();
     }
@@ -756,7 +762,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
        this.stopListenToNativeCallsState();
        Log.d(TAG, "[RNCallKeepModule] onHostDestroy executed");
        // This line will kill the android process after ending all calls
-       android.os.Process.killProcess(android.os.Process.myPid());
+       Process.killProcess(Process.myPid());
    }
 
     @ReactMethod
@@ -777,14 +783,14 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void setConnectionState(String uuid, int state) {
+    public void setConnectionState(String uuid, double state) {
         Log.d(TAG, "[RNCallKeepModule] setConnectionState, uuid: " + uuid + ", state :" + state);
         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
             Log.w(TAG, "[RNCallKeepModule] String ignored due to no ConnectionService or no phone account");
             return;
         }
 
-        VoiceConnectionService.setState(uuid, state);
+        VoiceConnectionService.setState(uuid, (int) state);
     }
 
     @ReactMethod
@@ -936,6 +942,15 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
+    public void checkIfBusy(Promise promise) {
+        promise.resolve("Unsupported platform");
+    }
+    @ReactMethod
+    public void checkSpeaker(Promise promise) {
+        promise.resolve("Unsupported platform");
+    }
+
+    @ReactMethod
     public void updateDisplay(String uuid, String displayName, String uri) {
         Log.d(TAG, "[RNCallKeepModule] updateDisplay, uuid: " + uuid + ", displayName: " + displayName+ ", uri: " + uri);
         Connection conn = VoiceConnectionService.getConnection(uuid);
@@ -968,9 +983,10 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void setAvailable(Boolean active) {
+    public void setAvailable(boolean active) {
         VoiceConnectionService.setAvailable(active);
     }
+
 
     @ReactMethod
     public void setForegroundServiceSettings(ReadableMap foregroundServerSettings) {
@@ -988,7 +1004,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     }
 
     @ReactMethod
-    public void canMakeMultipleCalls(Boolean allow) {
+    public void canMakeMultipleCalls(boolean allow) {
         VoiceConnectionService.setCanMakeMultipleCalls(allow);
     }
 
@@ -1063,6 +1079,16 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule implements Life
     @ReactMethod
     public void isConnectionServiceAvailable(Promise promise) {
         promise.resolve(isConnectionServiceAvailable());
+    }
+
+    @ReactMethod
+    public void reportConnectedOutgoingCallWithUUID(String uuid) {
+        //  iOS only method
+    }
+
+    @ReactMethod
+    public void reportConnectingOutgoingCallWithUUID(String uuid) {
+        // iOS only method
     }
 
     @ReactMethod
