@@ -34,6 +34,7 @@ export interface Spec extends TurboModule {
   reportConnectedOutgoingCallWithUUID(uuid: string): void
   reportConnectingOutgoingCallWithUUID(uuid: string): void
   reportEndCallWithUUID(uuid: string, reason: Int32): void
+  toggleAudioRouteSpeaker(uuid: string, routeSpeaker: boolean): void
   rejectCall(uuid: string): void
   endCall(uuid: string): void
   endAllCalls(): void
@@ -58,6 +59,8 @@ export interface Spec extends TurboModule {
   setCurrentCallActive(callUUID: string): void
   backToForeground(): void
   checkIsInManagedCall(): Promise<boolean>
+  getInitialEvents(): Promise<Object[]>
+  clearInitialEvents(): void
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCallKeep')
