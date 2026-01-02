@@ -1211,14 +1211,10 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
             return true;
         }
 
-        // Add more detailed logging
-        PhoneAccount phoneAccount = telecomManager != null ? telecomManager.getPhoneAccount(handle) : null;
-        
         return isConnectionServiceAvailable() && telecomManager != null &&
             hasPermissions() && telecomManager.getPhoneAccount(handle) != null &&
             telecomManager.getPhoneAccount(handle).isEnabled();
     }
-
     protected void registerReceiver() {
         if (!isReceiverRegistered) {
             isReceiverRegistered = true;
