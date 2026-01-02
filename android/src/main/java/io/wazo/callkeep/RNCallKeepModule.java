@@ -27,8 +27,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.drawable.BitmapDrawable;
+//import android.content.res.Resources;
+//import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Icon;
 import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
@@ -40,12 +40,12 @@ import android.os.Process;
 import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
+//import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.telecom.CallAudioState;
 import android.telecom.Connection;
-import android.telecom.DisconnectCause;
+//import android.telecom.DisconnectCause;
 import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
@@ -55,10 +55,10 @@ import android.telephony.PhoneStateListener;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Dynamic;
+//import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
+//import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -70,18 +70,18 @@ import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 import com.facebook.react.modules.permissions.PermissionsModule;
 
-import java.lang.reflect.Array;
+//import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
+//import java.util.ResourceBundle;
 
 import org.json.JSONObject;
 import org.json.JSONException;
 
-import static androidx.core.app.ActivityCompat.requestPermissions;
+//import static androidx.core.app.ActivityCompat.requestPermissions;
 
 import static io.wazo.callkeep.Constants.EXTRA_CALLER_NAME;
 import static io.wazo.callkeep.Constants.EXTRA_CALL_UUID;
@@ -409,7 +409,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         }
     }
 
-    @ReactMethod
+    @Override
     public void registerPhoneAccount(ReadableMap options) {
         setSettings(options);
 
@@ -455,6 +455,11 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
     }
 
     public void displayIncomingCall(String uuid, String number, String callerName, boolean hasVideo, @Nullable Bundle payload) {
+        Log.w(TAG, "[RNCallKeepModule] displayIncomingCall check: isConnectionServiceAvailable="
+                + isConnectionServiceAvailable()
+                + ", hasPhoneAccount="
+                + hasPhoneAccount());
+
         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
             Log.w(TAG, "[RNCallKeepModule] displayIncomingCall ignored due to no ConnectionService or no phone account");
             return;
@@ -567,7 +572,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         Log.d(TAG, "[RNCallKeepModule] endAllCalls executed");
     }
 
-    @ReactMethod
+    @Override
     public void checkPhoneAccountPermission(ReadableArray optionalPermissions, Promise promise) {
         Activity currentActivity = this.getCurrentReactActivity();
 
@@ -694,12 +699,12 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         promise.resolve(delayedEvents);
     }
 
-    @ReactMethod
-    public void clearInitialEvents() {
-        delayedEvents = new WritableNativeArray();
-    }
+//    @Override
+//    public void clearInitialEvents() {
+//        delayedEvents = new WritableNativeArray();
+//    }
 
-    @ReactMethod
+    @Override
     public void setOnHold(String uuid, boolean shouldHold) {
         Log.d(TAG, "[RNCallKeepModule] setOnHold, uuid: " + uuid + ", shouldHold: " + (shouldHold ? "true" : "false"));
 
@@ -716,7 +721,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         }
     }
 
-    @ReactMethod
+    @Override
     public void reportEndCallWithUUID(String uuid, double reason) {
 
         Log.d(TAG, "[RNCallKeepModule] reportEndCallWithUUID, uuid: " + uuid + ", reason: " + reason);
@@ -765,7 +770,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
        Process.killProcess(Process.myPid());
    }
 
-    @ReactMethod
+    @Override
     public void rejectCall(String uuid) {
         Log.d(TAG, "[RNCallKeepModule] rejectCall, uuid: " + uuid);
         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
@@ -782,7 +787,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         conn.onReject();
     }
 
-    @ReactMethod
+    @Override
     public void setConnectionState(String uuid, double state) {
         Log.d(TAG, "[RNCallKeepModule] setConnectionState, uuid: " + uuid + ", state :" + state);
         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
@@ -793,7 +798,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         VoiceConnectionService.setState(uuid, (int) state);
     }
 
-    @ReactMethod
+    @Override
     public void setMutedCall(String uuid, boolean shouldMute) {
         Log.d(TAG, "[RNCallKeepModule] setMutedCall, uuid: " + uuid + ", shouldMute: " + (shouldMute ? "true" : "false"));
         Connection conn = VoiceConnectionService.getConnection(uuid);
@@ -813,27 +818,27 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         }
         conn.onCallAudioStateChanged(newAudioState);
     }
-    /**
-     * toggle audio route for speaker via connection service function
-     * @param uuid
-     * @param routeSpeaker
-     */
-    @ReactMethod
-    public void toggleAudioRouteSpeaker(String uuid, boolean routeSpeaker) {
-        Log.d(TAG, "[RNCallKeepModule] toggleAudioRouteSpeaker, uuid: " + uuid + ", routeSpeaker: " + (routeSpeaker ? "true" : "false"));
-        VoiceConnection conn = (VoiceConnection) VoiceConnectionService.getConnection(uuid);
-        if (conn == null) {
-            Log.w(TAG, "[RNCallKeepModule] toggleAudioRouteSpeaker ignored because no connection found, uuid: " + uuid);
-            return;
-        }
-        if (routeSpeaker) {
-            conn.setAudioRoute(CallAudioState.ROUTE_SPEAKER);
-        } else {
-            conn.setAudioRoute(CallAudioState.ROUTE_EARPIECE);
-        }
-    }
+//    /**
+//     * toggle audio route for speaker via connection service function
+//     * @param uuid
+//     * @param routeSpeaker
+//     */
+//    @Override
+//    public void toggleAudioRouteSpeaker(String uuid, boolean routeSpeaker) {
+//        Log.d(TAG, "[RNCallKeepModule] toggleAudioRouteSpeaker, uuid: " + uuid + ", routeSpeaker: " + (routeSpeaker ? "true" : "false"));
+//        VoiceConnection conn = (VoiceConnection) VoiceConnectionService.getConnection(uuid);
+//        if (conn == null) {
+//            Log.w(TAG, "[RNCallKeepModule] toggleAudioRouteSpeaker ignored because no connection found, uuid: " + uuid);
+//            return;
+//        }
+//        if (routeSpeaker) {
+//            conn.setAudioRoute(CallAudioState.ROUTE_SPEAKER);
+//        } else {
+//            conn.setAudioRoute(CallAudioState.ROUTE_EARPIECE);
+//        }
+//    }
 
-    @ReactMethod
+    @Override
     public void setAudioRoute(String uuid, String audioRoute, Promise promise){
         try {
             VoiceConnection conn = (VoiceConnection) VoiceConnectionService.getConnection(uuid);
@@ -866,7 +871,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         }
     }
 
-    @ReactMethod
+    @Override
     public void getAudioRoutes(Promise promise){
         try {
             Context context = this.getAppContext();
@@ -929,7 +934,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         return "Phone";
     }
 
-    @ReactMethod
+    @Override
     public void sendDTMF(String uuid, String key) {
         Log.d(TAG, "[RNCallKeepModule] sendDTMF, uuid: " + uuid + ", key: " + key);
         Connection conn = VoiceConnectionService.getConnection(uuid);
@@ -941,16 +946,16 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         conn.onPlayDtmfTone(dtmf);
     }
 
-    @ReactMethod
+    @Override
     public void checkIfBusy(Promise promise) {
         promise.resolve("Unsupported platform");
     }
-    @ReactMethod
+    @Override
     public void checkSpeaker(Promise promise) {
         promise.resolve("Unsupported platform");
     }
 
-    @ReactMethod
+    @Override
     public void updateDisplay(String uuid, String displayName, String uri) {
         Log.d(TAG, "[RNCallKeepModule] updateDisplay, uuid: " + uuid + ", displayName: " + displayName+ ", uri: " + uri);
         Connection conn = VoiceConnectionService.getConnection(uuid);
@@ -963,7 +968,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         conn.setCallerDisplayName(displayName, TelecomManager.PRESENTATION_ALLOWED);
     }
 
-    @ReactMethod
+    @Override
     public void hasPhoneAccount(Promise promise) {
         if (telecomManager == null) {
             this.initializeTelecomManager();
@@ -972,23 +977,23 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         promise.resolve(hasPhoneAccount());
     }
 
-    @ReactMethod
+    @Override
     public void hasOutgoingCall(Promise promise) {
         promise.resolve(VoiceConnectionService.hasOutgoingCall);
     }
 
-    @ReactMethod
-    public void hasPermissions(Promise promise) {
-        promise.resolve(this.hasPermissions());
-    }
+//    @Override
+//    public void hasPermissions(Promise promise) {
+//        promise.resolve(this.hasPermissions());
+//    }
 
-    @ReactMethod
+    @Override
     public void setAvailable(boolean active) {
         VoiceConnectionService.setAvailable(active);
     }
 
 
-    @ReactMethod
+    @Override
     public void setForegroundServiceSettings(ReadableMap foregroundServerSettings) {
         if (foregroundServerSettings == null) {
             return;
@@ -1003,17 +1008,17 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         setSettings(settings);
     }
 
-    @ReactMethod
+    @Override
     public void canMakeMultipleCalls(boolean allow) {
         VoiceConnectionService.setCanMakeMultipleCalls(allow);
     }
 
-    @ReactMethod
+    @Override
     public void setReachable() {
         VoiceConnectionService.setReachable();
     }
 
-    @ReactMethod
+    @Override
     public void setCurrentCallActive(String uuid) {
         Log.d(TAG, "[RNCallKeepModule] setCurrentCallActive, uuid: " + uuid);
         Connection conn = VoiceConnectionService.getConnection(uuid);
@@ -1026,7 +1031,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         conn.setActive();
     }
 
-    @ReactMethod
+    @Override
     public void openPhoneAccounts() {
         Log.d(TAG, "[RNCallKeepModule] openPhoneAccounts");
         if (!isConnectionServiceAvailable()) {
@@ -1053,7 +1058,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         openPhoneAccountSettings();
     }
 
-    @ReactMethod
+    @Override
     public void openPhoneAccountSettings() {
         Log.d(TAG, "[RNCallKeepModule] openPhoneAccountSettings");
         if (!isConnectionServiceAvailable()) {
@@ -1076,27 +1081,27 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         return Build.VERSION.SDK_INT >= 23;
     }
 
-    @ReactMethod
+    @Override
     public void isConnectionServiceAvailable(Promise promise) {
         promise.resolve(isConnectionServiceAvailable());
     }
 
-    @ReactMethod
+    @Override
     public void reportConnectedOutgoingCallWithUUID(String uuid) {
         //  iOS only method
     }
 
-    @ReactMethod
+    @Override
     public void reportConnectingOutgoingCallWithUUID(String uuid) {
         // iOS only method
     }
 
-    @ReactMethod
+    @Override
     public void checkPhoneAccountEnabled(Promise promise) {
         promise.resolve(hasPhoneAccount());
     }
 
-    @ReactMethod
+    @Override
     public void backToForeground() {
         Context context = getAppContext();
         if (context == null) {
@@ -1203,12 +1208,22 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         ReactApplicationContext context = getContext();
 
         boolean hasPermissions = true;
+        List<String> missingPermissions = new ArrayList<>();
         for (String permission : permissions) {
             int permissionCheck = ContextCompat.checkSelfPermission(context, permission);
             if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
                 hasPermissions = false;
+                missingPermissions.add(permission);
             }
         }
+
+        Log.w(TAG, "[RNCallKeepModule] hasPermissions=" + hasPermissions);
+        if (!hasPermissions) {
+            Log.w(TAG, "[RNCallKeepModule] Missing permissions: " + missingPermissions.toString());
+        }
+
+        Log.w(TAG, "[RNCallKeepModule] displayIncomingCall check: hasPermissions=" + hasPermissions);
+
 
         return hasPermissions;
     }
@@ -1221,6 +1236,29 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         if (isSelfManaged()) {
             return true;
         }
+
+        // Add more detailed logging
+        PhoneAccount phoneAccount = telecomManager != null ? telecomManager.getPhoneAccount(handle) : null;
+
+        Log.w(TAG, "[RNCallKeepModule] Phone account details: " +
+                "handle=" + (handle != null ? handle.getId() : "null") + ", " +
+                "phoneAccount=" + (phoneAccount != null ? "exists" : "null") + ", " +
+                "isEnabled=" + (phoneAccount != null ? phoneAccount.isEnabled() : "N/A") + ", " +
+                "componentName=" + (handle != null ? handle.getComponentName() : "null"));
+
+        boolean connectionServiceAvailable = isConnectionServiceAvailable();
+        boolean telecomManagerValid = telecomManager != null;
+        boolean permissionsGranted = hasPermissions();
+        boolean phoneAccountExists = phoneAccount != null;
+        boolean phoneAccountEnabled = phoneAccount != null && phoneAccount.isEnabled();
+
+        Log.w(TAG, "[RNCallKeepModule] Debug displayIncomingCall check: " +
+                "isConnectionServiceAvailable=" + connectionServiceAvailable + ", " +
+                "telecomManager!=null=" + telecomManagerValid + ", " +
+                "hasPermissions=" + permissionsGranted + ", " +
+                "phoneAccountExists=" + phoneAccountExists + ", " +
+                "phoneAccountEnabled=" + phoneAccountEnabled);
+
 
         return isConnectionServiceAvailable() && telecomManager != null &&
             hasPermissions() && telecomManager.getPhoneAccount(handle) != null &&

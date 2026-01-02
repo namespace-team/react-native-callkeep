@@ -5,6 +5,9 @@ import { Int32 } from 'react-native/Libraries/Types/CodegenTypes'
 export interface Spec extends TurboModule {
   setup(options: Object): void
   checkDefaultPhoneAccount(): Promise<boolean>
+  checkPhoneAccountPermission(optionalPermissions: Array<string>): Promise<void>
+  openPhoneAccounts(): void
+  openPhoneAccountSettings():void
   answerIncomingCall(uuid: string): void
   registerPhoneAccount(options: Object): void
   registerEvents(): void

@@ -337,14 +337,20 @@ class RNCallKeep {
     });
 
   _setupAndroid = async (options) => {
+
+    console.log('RNCallKeep: Setting up Android with options', options);
     RNCallKeepModule.setup(options);
 
     if (options.selfManaged) {
       return false;
     }
 
+    console.log('RNCallKeep: Checking phone account permission');
+
     const showAccountAlert = await RNCallKeepModule.checkPhoneAccountPermission(options.additionalPermissions || []);
+    console.log('RNCallKeep: showAccountAlert', showAccountAlert);
     const shouldOpenAccounts = await this._alert(options, showAccountAlert);
+    console.log('RNCallKeep: shouldOpenAccounts', shouldOpenAccounts);
 
     if (shouldOpenAccounts) {
       RNCallKeepModule.openPhoneAccounts();
