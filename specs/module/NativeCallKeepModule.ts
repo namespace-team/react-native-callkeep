@@ -61,6 +61,8 @@ export interface Spec extends TurboModule {
   checkIsInManagedCall(): Promise<boolean>
   getInitialEvents(): Promise<Object[]>
   clearInitialEvents(): void
+  addListener(eventName: string): void;
+  removeListeners(count: number): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCallKeep')

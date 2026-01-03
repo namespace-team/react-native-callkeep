@@ -53,6 +53,7 @@ import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -125,19 +126,6 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
     private boolean hasListeners = false;
     private boolean hasActiveCall = false;
 
-    public static RNCallKeepModule getInstance(ReactApplicationContext reactContext, boolean realContext) {
-        if (instance == null) {
-            Log.d(TAG, "[RNCallKeepModule] getInstance : " + (reactContext == null ? "null" : "ok"));
-            instance = new RNCallKeepModule(reactContext);
-            instance.registerReceiver();
-            instance.fetchStoredSettings(reactContext);
-        }
-        if (realContext) {
-            instance.setContext(reactContext);
-        }
-        return instance;
-    }
-
     public static WritableMap getSettings(@Nullable Context context) {
         if (_settings == null) {
             fetchStoredSettings(context);
@@ -146,13 +134,19 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         return _settings;
     }
 
-    public RNCallKeepModule(ReactApplicationContext reactContext) {
+    RNCallKeepModule(ReactApplicationContext reactContext) {
         super(reactContext);
         // This line for listening to the Activity Lifecycle Events so we can end the calls onDestroy
         reactContext.addLifecycleEventListener(this);
         Log.d(TAG, "[RNCallKeepModule] constructor");
 
         this.reactContext = reactContext;
+
+        instance = this;
+
+        this.registerReceiver();
+
+        fetchStoredSettings(reactContext);
         delayedEvents = new WritableNativeArray();
     }
 
@@ -357,15 +351,15 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         // iOS only method
     }
 
-//    @Override
-//    public void addListener(String eventName) {
-//      // Keep: Required for RN built in Event Emitter Calls.
-//    }
-//
-//    @Override
-//    public void removeListeners(Integer count) {
-//      // Keep: Required for RN built in Event Emitter Calls.
-//    }
+    @Override
+    public void addListener(String eventName) {
+      // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @Override
+    public void removeListeners(double count) {
+      // Keep: Required for RN built in Event Emitter Calls.
+    }
 
     @Override
     public void setup(ReadableMap options) {
@@ -802,6 +796,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         }
         conn.onCallAudioStateChanged(newAudioState);
     }
+
     /**
      * toggle audio route for speaker via connection service function
      * @param uuid
