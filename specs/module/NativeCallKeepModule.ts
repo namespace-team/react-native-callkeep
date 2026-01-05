@@ -2,6 +2,30 @@ import type { TurboModule, CodegenTypes } from 'react-native'
 import { TurboModuleRegistry } from 'react-native'
 import { Int32 } from 'react-native/Libraries/Types/CodegenTypes'
 
+export type DisplayOptions = {
+  hasVideo?: boolean
+  supportsHolding?: boolean
+  supportsDTMF?: boolean
+  supportsGrouping?: boolean
+  supportsUngrouping?: boolean
+}
+
+export type StartCallOptionsIOS = {
+  hasVideo?: boolean
+  handleType?: string
+}
+
+export type StartCallOptionsAndroid = {
+  hasVideo?: boolean
+}
+
+export type IncomingCallOptionsIOS = undefined |{
+  handleType?: string
+} & DisplayOptions
+
+export type IncomingCallOptionsAndroid = Pick<DisplayOptions, 'hasVideo'> | undefined;
+
+
 export interface Spec extends TurboModule {
   setup(options: Object): void
   checkDefaultPhoneAccount(): Promise<boolean>
@@ -14,20 +38,31 @@ export interface Spec extends TurboModule {
   unregisterEvents(): void
   displayIncomingCall(
     uuid: string,
-    number: string,
-    callerName: string,
-    hasVideo: boolean
+    handle: string,
+    localizedCallerName: string,
+    options?: Object
   ): void
   startCall(
     uuid: string,
-    number: string,
-    callerName: string,
-    hasVideo: boolean
+    handle: string,
+    contactIdentifier: string,
+    options: Object
   ): void
+  /**
+   * Updates the display with a new name and URI.
+   *
+   * @param uuid - Unique identifier of the display
+   * @param displayName - New display name
+   * @param uri - URI to display
+   * @param options - Optional settings (iOS only)
+   *
+   * @platform ios
+   */
   updateDisplay(
     uuid: string,
     displayName: string,
-    uri: string,
+    handle: string,
+    options?: Object
   ): void
   checkPhoneAccountEnabled(): Promise<boolean>
   isConnectionServiceAvailable(): Promise<boolean>
@@ -63,6 +98,7 @@ export interface Spec extends TurboModule {
   clearInitialEvents(): void
   addListener(eventName: string): void;
   removeListeners(count: number): void;
+  _startCallActionEventListenerAdded(): void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNCallKeep')

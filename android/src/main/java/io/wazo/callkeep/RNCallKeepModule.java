@@ -433,8 +433,13 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
     }
 
     @Override
-    public void displayIncomingCall(String uuid, String number, String callerName, boolean hasVideo) {
-        this.displayIncomingCall(uuid, number, callerName, hasVideo, null);
+    public void displayIncomingCall(String uuid, String handle, String localizedCallerName, ReadableMap options) {
+        boolean hasVideo = false;
+
+        if (options != null && options.hasKey("hasVideo") && !options.isNull("hasVideo")) {
+            hasVideo = options.getBoolean("hasVideo");
+        }
+        this.displayIncomingCall(uuid, handle, localizedCallerName, hasVideo, null);
     }
 
     public void displayIncomingCall(String uuid, String number, String callerName, boolean hasVideo, @Nullable Bundle payload) {
@@ -935,7 +940,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
     }
 
     @Override
-    public void updateDisplay(String uuid, String displayName, String uri) {
+    public void updateDisplay(String uuid, String displayName, String uri, ReadableMap options) {
         Log.d(TAG, "[RNCallKeepModule] updateDisplay, uuid: " + uuid + ", displayName: " + displayName+ ", uri: " + uri);
         Connection conn = VoiceConnectionService.getConnection(uuid);
         if (conn == null) {

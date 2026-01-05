@@ -1,6 +1,7 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
-const RNCallKeepModule = NativeModules.RNCallKeep;
+// const RNCallKeepModule = NativeModules.RNCallKeep;
+import RNCallKeepModule from './specs/module/NativeCallKeepModule';
 const eventEmitter = new NativeEventEmitter(RNCallKeepModule);
 
 const RNCallKeepDidReceiveStartCallAction = 'RNCallKeepDidReceiveStartCallAction';

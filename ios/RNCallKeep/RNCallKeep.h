@@ -13,8 +13,9 @@
 //#import <AVFoundation/AVAudioSession.h>
 
 #import <React/RCTEventEmitter.h>
+#import "RNCallKeepSpec.h"
 
-@interface RNCallKeep : RCTEventEmitter <CXProviderDelegate>
+@interface RNCallKeep : RCTEventEmitter <NativeCallKeepModuleSpec, CXProviderDelegate>
 
 @property (nonatomic, strong) CXCallController *callKeepCallController;
 @property (nonatomic, strong) CXProvider *callKeepProvider;
