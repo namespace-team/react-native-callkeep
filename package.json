@@ -29,7 +29,6 @@
     "react": "19.1.0"
   },
   "dependencies": {},
-  "files": ["index.js","specs/", "index.d.ts"],
   "codegenConfig": {
      "name": "RNCallKeepSpec",
      "type": "modules",
