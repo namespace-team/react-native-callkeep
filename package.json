@@ -36,15 +36,5 @@
      "android": {
       "javaPackageName": "io.wazo.callkeep"
     }
-  },
-  "files": [
-    "/android",
-    "!/android/build",
-    "/ios",
-    "/*.podspec",
-    "specs",
-    "actions.js",
-    "index.js",
-    "index.d.ts"
-  ]
+  }
 }
