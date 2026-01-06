@@ -362,6 +362,11 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
     }
 
     @Override
+    public void _startCallActionEventListenerAdded() {
+        // iOS only method
+    }
+
+    @Override
     public void setup(ReadableMap options) {
         Log.d(TAG, "[RNCallKeepModule] setup : " + options);
 
@@ -482,7 +487,12 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
     }
 
     @Override
-    public void startCall(String uuid, String number, String callerName, boolean hasVideo) {
+    public void startCall(String uuid, String number, String callerName, ReadableMap options) {
+        boolean hasVideo = false;
+
+        if (options != null && options.hasKey("hasVideo") && !options.isNull("hasVideo")) {
+            hasVideo = options.getBoolean("hasVideo");
+        }
         this.startCall(uuid, number, callerName, hasVideo, null);
     }
 
@@ -529,7 +539,7 @@ public class RNCallKeepModule extends NativeCallKeepModuleSpec implements Lifecy
         }
         Context context = this.getAppContext();
         AudioManager audioManager = (AudioManager) context.getSystemService(context.AUDIO_SERVICE);
-        audioManager.setMode(0);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
         conn.onDisconnect();
         this.stopListenToNativeCallsState();
         this.hasActiveCall = false;
