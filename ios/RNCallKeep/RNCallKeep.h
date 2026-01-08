@@ -13,7 +13,7 @@
 //#import <AVFoundation/AVAudioSession.h>
 
 #import <React/RCTEventEmitter.h>
-#import "RNCallKeepSpec.h"
+#import <RNCallKeepSpec/RNCallKeepSpec.h>
 
 @interface RNCallKeep : RCTEventEmitter <NativeCallKeepModuleSpec, CXProviderDelegate>
 
