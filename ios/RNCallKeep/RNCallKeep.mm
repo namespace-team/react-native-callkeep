@@ -16,7 +16,7 @@
 
 #import <AVFoundation/AVAudioSession.h>
 #import <CallKit/CallKit.h>
-#import "RNCallKeepSpec.h"
+#import <RNCallKeepSpec/RNCallKeepSpec.h>
 
 #ifdef DEBUG
 static int const OUTGOING_CALL_WAKEUP_DELAY = 10;
