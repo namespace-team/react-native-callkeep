@@ -13,9 +13,14 @@
 //#import <AVFoundation/AVAudioSession.h>
 
 #import <React/RCTEventEmitter.h>
-#import <RNCallKeepSpec/RNCallKeepSpec.h>
 
-@interface RNCallKeep : RCTEventEmitter <NativeCallKeepModuleSpec, CXProviderDelegate>
+// This results in build error because TurboModules introduces C++ headers, and those cannot be processed by Swift.
+// error occurs only when the headers are used into the app’s Swift bridging header
+
+//#import <RNCallKeepSpec/RNCallKeepSpec.h>
+//@interface RNCallKeep : RCTEventEmitter <NativeCallKeepModuleSpec, CXProviderDelegate>
+
+@interface RNCallKeep : RCTEventEmitter <CXProviderDelegate>
 
 @property (nonatomic, strong) CXCallController *callKeepCallController;
 @property (nonatomic, strong) CXProvider *callKeepProvider;

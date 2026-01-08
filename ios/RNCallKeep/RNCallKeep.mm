@@ -1,5 +1,5 @@
 //
-//  RNCallKeep.m
+//  RNCallKeep.mm
 //  RNCallKeep
 //
 //  Copyright 2016-2019 The CallKeep Authors (see the AUTHORS file)
@@ -16,6 +16,11 @@
 
 #import <AVFoundation/AVAudioSession.h>
 #import <CallKit/CallKit.h>
+
+#import <RNCallKeepSpec/RNCallKeepSpec.h>
+
+@interface RNCallKeep() <NativeCallKeepModuleSpec>
+@end
 
 #ifdef DEBUG
 static int const OUTGOING_CALL_WAKEUP_DELAY = 10;
